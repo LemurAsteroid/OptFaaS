@@ -1,6 +1,8 @@
 import type { AWS } from '@serverless/typescript';
 
-import runner from '@services/runner';
+import scheduleBenchmarkFunctions from '@services/runner/benchmarkMaster';
+import benchmarkRunner from '@services/runner/benchmarkRunner';
+import benchmarkFunction02 from '@functions/02';
 
 
 const serverlessConfiguration: AWS = {
@@ -21,9 +23,26 @@ const serverlessConfiguration: AWS = {
         iam: {
             role: "arn:aws:iam::641726332128:role/LabRole",
         },
+        region: 'us-east-1',
+        iamRoleStatements: [
+            {
+                Effect: "Allow",
+                Action: [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem"
+                ],
+                Resource: "arn:aws:dynamodb:us-east-1:641726332128:table/*"
+            },
+            {
+                Effect: "Allow",
+                Action: ["lambda:InvokeFunction"],
+                Principal: "*",
+                Resource: ["arn:aws:lambda:us-east-1:641726332128:function:benchmarkMaster", "arn:aws:lambda:us-east-1:641726332128:function:benchmarkRunner"]
+            }
+        ]
     },
     // import the function via paths
-    functions: { runner },
+    functions: { scheduleBenchmarkFunctions, benchmarkRunner, benchmarkFunction02 },
     package: { individually: true },
     custom: {
         esbuild: {
