@@ -1,7 +1,7 @@
 import { putValue } from "@libs/dynamoDB";
 import type { ExecutionLog } from "@models/model";
 
-const logger = async (event, context, callback) => {
+const logger = async (event) => {
     if (event.results.status) {
         /* const log: ExecutionLog;
         

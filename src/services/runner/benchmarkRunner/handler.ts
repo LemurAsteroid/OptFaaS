@@ -1,7 +1,8 @@
 import { LambdaClient, InvokeCommand, InvokeCommandInput } from "@aws-sdk/client-lambda";
 import { middify } from "@libs/logger";
 const benchmarkRunner = async (event) => {
-    const promises = []
+    const promises = [];
+    // @ts-ignore
     console.log(event)
 
     const client: LambdaClient = new LambdaClient({ region: event.sregion });

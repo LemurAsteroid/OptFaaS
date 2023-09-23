@@ -1,7 +1,7 @@
 import { LambdaClient, InvokeCommand, InvokeCommandInput } from "@aws-sdk/client-lambda";
 import { variables, AWS_REGIONS } from 'variables';
 
-const scheduleBenchmarkFunctions = async (event) => {
+const scheduleBenchmarkFunctions = async () => {
     const promises = []
 
     variables.REGION.forEach(sregion => {
