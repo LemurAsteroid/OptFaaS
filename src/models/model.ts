@@ -1,25 +1,41 @@
-interface FunctionData {
-    functionId: number;
+export interface FunctionData {
+    ufunctionId: number;
     language: string;
     description: string;
     // availableRegions: [Region];
 }
 
-export default FunctionData
+// export = FunctionData;
 
-interface ExecutionLog {
+
+export interface ExecutionLog {
+    functionId: string;
     executionId: number;
-    functionId: Function;
-    region: Region;
+    language: string;
+    region: string;
     status: boolean;
+    response: string;
     latency: number;
-    initTime: number;
+    internalTime: number;
+    numberOfExecutions: number;
+    [key: string]: string | number | boolean;
+}
+
+export interface ExecutionLogCW {
+    startupTime: number;
+    coldStart: boolean; 
     procTime: number;
     BilledTime: number;
     memorySize: number;
     maxMemoryUsed: number;
+    [key: string]: string | number | boolean;
 }
 
-interface Region {
-    regionId: string;
+export interface Region {
+    [regionId:string]: string;
+}
+
+
+export interface TestFunction {
+    (): [boolean, string];
 }
