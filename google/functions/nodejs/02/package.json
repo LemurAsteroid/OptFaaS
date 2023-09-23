@@ -1,0 +1,23 @@
+{
+    "scripts": {
+        "start": "npx functions-framework --target=nodejs_fun02",
+        "deploy": "gcloud functions deploy nodejs02 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --region us-central1 --entry-point=nodejs_fun02 --max-instances=30"
+    },
+    "dependencies": {
+        "@google-cloud/functions-framework": "^3.0.0",
+        "rimraf": "^5.0.1",
+        "sharp": "^0.32.5"
+    },
+    "name": "nodejs-docs-samples-functions-hello-world-http",
+    "version": "0.0.1",
+    "private": true,
+    "license": "Apache-2.0",
+    "author": "Google Inc.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GoogleCloudPlatform/nodejs-docs-samples.git"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    }
+}
