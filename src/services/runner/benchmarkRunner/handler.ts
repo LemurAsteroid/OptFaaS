@@ -1,20 +1,22 @@
 import { LambdaClient, InvokeCommand, InvokeCommandInput } from "@aws-sdk/client-lambda";
 import { middify } from "@libs/logger";
+import { AWS_REGIONS } from "variables";
 const benchmarkRunner = async (event) => {
     const promises = []
     console.log(event)
 
-    const client: LambdaClient = new LambdaClient({ region: event.sregion });
+    const client: LambdaClient = new LambdaClient({ region: AWS_REGIONS[event.sregion] });
 
-    for (let i = 0; i < event.numberOfExecution; i++) {
+    for (let i = 0; i < event.numberOfParallelExecutions; i++) {
         const params: InvokeCommandInput = {
             FunctionName: `optFaas-dev-benchmarkFunction${event.ufunctionId}`,
             InvocationType: 'Event',
             Payload: JSON.stringify({
                 ufunctionId: event.ufunctionId,
                 language: "nodejs",
-                region: event.sregion,
-            }) // Payload to pass to the target Lambda
+                sregion: AWS_REGIONS[event.sregion],
+                numberOfParallelExecutions: event.numberOfParallelExecutions,
+            })
         };
         promises.push(client.send(new InvokeCommand(params)))
     }

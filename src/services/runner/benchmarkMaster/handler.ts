@@ -8,17 +8,15 @@ const scheduleBenchmarkFunctions = async (event) => {
         const client: LambdaClient = new LambdaClient({ region: AWS_REGIONS[sregion] });
         variables.SCHEDULED_FUNCTIONS.forEach(ufunctionId => {
             const params: InvokeCommandInput = {
-                FunctionName: `optFaas-dev-benchmarkRunnerAPI`,
+                FunctionName: `optFaas-dev-benchmarkRunner`,
                 InvocationType: 'Event',
                 Payload: JSON.stringify({
-                    "functionData": {
-                        "ufunctionId": ufunctionId,
-                        "language": "nodejs",
-                    },
-                    "sregion": sregion,
-                    "provider": "GCF",
-                    "numberOfExecution": variables.NUMBER_OF_PARALLELIZATION,
-                }) // Payload to pass to the target Lambda
+                    ufunctionId: ufunctionId,
+                    language: "nodejs",
+                    sregion: sregion,
+                    provider: "GCP",
+                    numberOfParallelExecutions: variables.NUMBER_OF_PARALLELIZATION,
+                })
             };
             promises.push(client.send(new InvokeCommand(params)))
         });
