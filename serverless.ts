@@ -4,7 +4,9 @@ import type { AWS } from '@serverless/typescript';
 import scheduleBenchmarkFunctions from '@services/runner/benchmarkMaster';
 import benchmarkRunner from '@services/runner/benchmarkRunner';
 import benchmarkFunction02 from '@functions/02';
+import benchmarkFunction01 from '@functions/01';
 import cwLogger from "@services/logging/cloudWatchLogger";
+import logger from "@services//logger";
 import benchmarkRunnerAPI from '@services/runner/benchmarkRunnerAPIGateway';
 
 
@@ -32,20 +34,38 @@ const serverlessConfiguration: AWS = {
                 Effect: "Allow",
                 Action: [
                     "dynamodb:GetItem",
-                    "dynamodb:PutItem"
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Query",
                 ],
-                Resource: "arn:aws:dynamodb:us-east-1:#{AWS::AccountId}:table/*"
+                Resource: ["arn:aws:dynamodb:us-east-1:#{AWS::AccountId}:table/*", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:cwLogger"]
             },
             {
                 Effect: "Allow",
                 Action: ["lambda:InvokeFunction"],
                 Principal: "*",
-                Resource: ["arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkMaster", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkRunner"]
-            }
+                Resource: ["arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkMaster", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkRunner", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkFunction02"]
+            },
+            {
+                Effect: "Allow",
+                Action: [
+                    "SNS:Publish",
+                    "SNS:SetTopicAttributes",
+                    "SNS:DeleteTopic",
+                    "SNS:ListSubscriptionsByTopic",
+                    "SNS:GetTopicAttributes",
+                    "SNS:AddPermission",
+                    "SNS:Subscribe"
+                ],
+                Principal: "*",
+                Resource: ["arn:aws:sns:us-east-1:#{AWS::AccountId}:LOGGING_TOPIC", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:logger", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkFunction01", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkFunction02"]
+            },
         ]
     },
     // import the function via paths
-    functions: { scheduleBenchmarkFunctions, benchmarkRunner, cwLogger,benchmarkRunnerAPI, benchmarkFunction02 },
+    functions: { scheduleBenchmarkFunctions, benchmarkRunner, cwLogger, benchmarkRunnerAPI, benchmarkFunction01, benchmarkFunction02, logger },
     // Use type assertion to declare 'stepFunctions'
     // stepFunctions: {
     //     stateMachines: {
@@ -113,7 +133,44 @@ const serverlessConfiguration: AWS = {
                         WriteCapacityUnits: 1
                     }
                 }
-            }
+            },
+            ExecutionLogTable: {
+                Type: 'AWS::DynamoDB::Table',
+                Properties: {
+                    TableName: 'ExecutionLogTable',
+                    AttributeDefinitions: [
+                        { AttributeName: 'requestId', AttributeType: 'S' },
+                    ],
+                    KeySchema: [
+                        { AttributeName: 'requestId', KeyType: 'HASH' },
+                    ],
+                    ProvisionedThroughput: {
+                        ReadCapacityUnits: 1,
+                        WriteCapacityUnits: 1,
+                    },
+                },
+            },
+            EventInvokeConfig: {
+                Type: "AWS::Lambda::EventInvokeConfig",
+                Properties: {
+                    FunctionName: "optFaas-dev-benchmarkFunction01",
+                    Qualifier: "$LATEST",
+                    MaximumEventAgeInSeconds: 600,
+                    MaximumRetryAttempts: 0,
+                    DestinationConfig: {
+                        OnSuccess: {
+                            Destination: "arn:aws:sns:us-east-1:#{AWS::AccountId}:LOGGING_TOPIC"
+                        },
+                    },
+                }
+            },
+            // LoggingTopic: {
+            //     Type: 'AWS::SNS::Topic',
+            //     Properties: {
+            //         DisplayName: 'LOGGING_TOPIC',
+            //         TopicName: 'LOGGING_TOPIC',
+            //     },
+            // },
         }
     }
 };

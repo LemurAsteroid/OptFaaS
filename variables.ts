@@ -4,6 +4,7 @@ export const variables = {
     NUMBER_OF_PARALLELIZATION: 5,
     CLOUD_WATCH_TRIGGER_ARN: "",
     GCP_BENCHMARK_RUNNER_URL: "https://us-central1-optfaas.cloudfunctions.net/benchmarkRunner",
+    LOGGING_TOPIC_ARN: 'arn:aws:sns:us-east-1:794009295823:LOGGING_TOPIC',
 } as const;
 
 export const AWS_REGIONS: { [key: string]: string } = {
