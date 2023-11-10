@@ -13,6 +13,7 @@ const benchmarkRunnerAPI = async (event) => {
         const requestData = {
             ufunctionId: event.functionData.ufunctionId,
             region: event.sregion,
+            numberOfParallelExecutions: event.numberOfExecution,
         };
 
         // Make an HTTP POST request to the API Gateway endpoint
