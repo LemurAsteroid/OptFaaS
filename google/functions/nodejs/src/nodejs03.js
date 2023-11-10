@@ -14,7 +14,7 @@ const BUCKET_NAME = 'video_benchmark_bucket';
 const VIDEO_NAME = 'benchmark_sample_video.mp4';
 
 
-convertVideoToGif = async (req, res) => {
+convertVideoToGif = async (req) => {
     const tmpDir = os.tmpdir();
     const file = storage.bucket(BUCKET_NAME).file(VIDEO_NAME);
     const tempLocalFile = path.join(tmpDir, VIDEO_NAME);

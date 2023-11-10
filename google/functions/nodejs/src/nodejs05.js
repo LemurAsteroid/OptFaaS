@@ -1,4 +1,4 @@
-nodeFactors = (req) => {
+nodeFactors = async (req) => {
     let n = req.body.n || 2688834647444046;
 
     let result = factors(n);

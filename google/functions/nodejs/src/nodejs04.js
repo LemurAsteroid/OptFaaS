@@ -8,7 +8,7 @@ function random(b, e) {
     return Math.round(Math.random() * (e - b) + b);
 }
 
-webAppBenchmark = async (req, res) => {
+webAppBenchmark = async (req) => {
 
     const numRequests = 100; // Number of requests to send
     const randomLen = 10; // Length of the random_numbers array
