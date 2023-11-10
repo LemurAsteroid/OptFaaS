@@ -1,5 +1,4 @@
 const now = require('performance-now');
-const fs = require("fs");
 const {safeLogs} = require("./libs/storage");
 const {matrixMultiplication} = require('./src/nodejs01');
 const {fileSystemBenchmark} = require("./src/nodejs02");
@@ -30,10 +29,10 @@ exports.nodejs05 = async (req, res) => {
 
 
 const wrapperFunction = async (benchmarkFunction, req, res) => {
-    const timeStamp = new Date().toDateString();
+    const timeStamp = new Date().toISOString();
 
     const start = now();
-    const response = await benchmarkFunction();
+    const response = await benchmarkFunction(req);
     const end = now();
 
     if (!response) {

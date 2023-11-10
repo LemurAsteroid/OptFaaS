@@ -1,4 +1,4 @@
-matrixMultiplication = async (req, res) => {
+matrixMultiplication = async (req) => {
     const n = 100;
     matrix(n);
 

@@ -1,21 +1,11 @@
 const fs = require("fs");
 const rimraf = require("rimraf");
 
-fileSystemBenchmark = async (req, res) => {
-    let n, size;
+fileSystemBenchmark = async (req) => {
+    let n = req.body.n || 10000;
+    let size= req.body.size || 10240;
     let rnd = Math.floor(Math.random() * 900000) + 100000;
 
-    if (req.query && req.query.n) {
-        n = req.query.n;
-    } else {
-        n = 10000;
-    }
-
-    if (req.query && req.query.size) {
-        size = req.query.size;
-    } else {
-        size = 10240;
-    }
 
     let text = '';
 

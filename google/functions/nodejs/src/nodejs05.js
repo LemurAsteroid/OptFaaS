@@ -1,25 +1,9 @@
-const now = require('performance-now');
-const fs = require('fs');
-
-nodeFactors = (req, res) => {
-    let n;
-
-    if(req.query && req.query.n) {
-        n = req.query.n;
-    } else {
-        n = 2688834647444046;
-    }
+nodeFactors = (req) => {
+    let n = req.body.n || 2688834647444046;
 
     let result = factors(n);
 
-    return {
-        success: true,
-        payload: {
-            "test": "cpu test",
-            "n": Number(n),
-            "result": result
-        }
-    };
+    return true;
 };
 
 function factors(num) {
@@ -33,7 +17,9 @@ function factors(num) {
             }
         }
 
-    n_factors.sort(function(a, b){return a - b;});
+    n_factors.sort(function (a, b) {
+        return a - b;
+    });
 
     return n_factors;
 }
