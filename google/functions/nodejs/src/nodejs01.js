@@ -1,31 +1,13 @@
-const functions = require('@google-cloud/functions-framework');
+matrixMultiplication = async (req, res) => {
+    const n = 100;
+    matrix(n);
 
-functions.http('nodejs_fun01', (req, res) => {
-  console.log("started");
-  let n = 100;
-
-  
-  matrix(n);
-
-  console.log("finished");
-
-  const response = {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      success: true,
+  return {success: true,
       payload: {
-        test: 'matrix test',
-        n: Number(n),
-      },
-    }),
-  };
-
-  
-  res.status(200).send(response);
-});
+          "test": "cpu test",
+          "n": Number(n)
+      }};
+};
 
 const randomTable = (size) =>
   Array.from({ length: size }, () =>
@@ -52,3 +34,6 @@ function matrix(n) {
   return true;
 }
 
+module.exports = {
+    matrixMultiplication
+}

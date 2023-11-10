@@ -1,0 +1,29 @@
+{
+    "scripts": {
+        "nodejs01": "gcloud functions deploy nodejs01 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --region us-central1 --entry-point=nodejs01 --max-instances=30",
+        "nodejs02": "gcloud functions deploy nodejs02 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --region us-central1 --entry-point=nodejs02 --max-instances=30",
+        "nodejs03": "gcloud functions deploy nodejs03 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --region us-central1 --entry-point=nodejs03 --max-instances=20 --memory=1Gi",
+        "nodejs04": "gcloud functions deploy nodejs04 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --region us-central1 --entry-point=nodejs04 --max-instances=20 --memory=256",
+        "nodejs05": "gcloud functions deploy nodejs05 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --region us-central1 --entry-point=nodejs05 --max-instances=20 --memory=256"
+    },
+    "dependencies": {
+        "@ffmpeg-installer/ffmpeg": "^1.1.0",
+        "@google-cloud/functions-framework": "^3.0.0",
+        "@google-cloud/storage": "^7.6.0",
+        "mustache": "^4.2.0",
+        "performance-now": "^2.1.0",
+        "rimraf": "^5.0.5"
+    },
+    "name": "optfaas-nodejs-benchmark-suite",
+    "version": "0.0.1",
+    "private": true,
+    "license": "Apache-2.0",
+    "author": "Google Inc.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GoogleCloudPlatform/nodejs-docs-samples.git"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    }
+}

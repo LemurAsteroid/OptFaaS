@@ -3,6 +3,7 @@ const { spawn } = require('child_process');
 const os = require('os');
 
 const { Storage } = require('@google-cloud/storage');
+const fs = require("fs");
 
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 
@@ -13,7 +14,7 @@ const BUCKET_NAME = 'video_benchmark_bucket';
 const VIDEO_NAME = 'benchmark_sample_video.mp4';
 
 
-exports.convertVideoToGif = async (event, context) => {
+convertVideoToGif = async (req, res) => {
     const tmpDir = os.tmpdir();
     const file = storage.bucket(BUCKET_NAME).file(VIDEO_NAME);
     const tempLocalFile = path.join(tmpDir, VIDEO_NAME);
@@ -29,7 +30,7 @@ exports.convertVideoToGif = async (event, context) => {
         tempLocalGif,
     ]);
 
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         ffmpegProcess.on('close', (code) => {
             if (code === 0) {
                 // Upload the GIF to GCP
@@ -50,4 +51,15 @@ exports.convertVideoToGif = async (event, context) => {
             }
         });
     });
+
+    return {
+        success: true,
+        payload: {
+            "test": "convertVideoToGifBenchmark"
+        },
+    };
 };
+
+module.exports = {
+    convertVideoToGif
+}
