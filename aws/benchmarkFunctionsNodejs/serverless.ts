@@ -1,6 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
-import benchmarkFunction02 from '@functions/02';
+import {nodejs01, nodejs02} from '@functions/wrapper';
 import benchmarkFunction01 from '@functions/01';
 
 const serverlessConfiguration: AWS = {
@@ -24,7 +24,7 @@ const serverlessConfiguration: AWS = {
         region: 'ap-northeast-1',
     },
     // import the function via paths
-    functions: { benchmarkFunction01, benchmarkFunction02 },
+    functions: { benchmarkFunction01, nodejs01, nodejs02},
     package: { individually: true },
     custom: {
         esbuild: {
