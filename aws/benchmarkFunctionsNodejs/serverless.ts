@@ -1,7 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
 import {nodejs01, nodejs02} from '@functions/wrapper';
-import benchmarkFunction01 from '@functions/01';
 
 const serverlessConfiguration: AWS = {
     service: 'optFaas',
@@ -21,10 +20,10 @@ const serverlessConfiguration: AWS = {
         iam: {
             role: "arn:aws:iam::#{AWS::AccountId}:role/LabRole",
         },
-        region: 'ap-northeast-1',
+        region: 'us-east-1',
     },
     // import the function via paths
-    functions: { benchmarkFunction01, nodejs01, nodejs02},
+    functions: { nodejs01, nodejs02},
     package: { individually: true },
     custom: {
         esbuild: {

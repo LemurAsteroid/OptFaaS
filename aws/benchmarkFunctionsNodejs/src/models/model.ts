@@ -69,5 +69,5 @@ export interface ex_log {
 
 
 export interface BenchmarkFunction {
-    (): [state: boolean, payload: string];
+    (): boolean;
 }

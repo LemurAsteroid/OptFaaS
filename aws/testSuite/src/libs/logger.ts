@@ -23,23 +23,7 @@ export const middify = (handler: any, serviceName: string) => {
         .use(injectLambdaContext(logger, { logEvent: true }));
 }
 
-
-export const safeExecutionData = async (event, context) => {
-    const executionData: ExecutionData = {
-        "requestId": context.awsRequestId,
-        "logGroupName": context.logGroupName,
-        "logStreamName": context.logStreamName,
-        "functionName": context.functionName,
-        "memoryLimitInMB": context.memoryLimitInMB,
-        "language": event.language,
-        "sregion": event.sregion
-    }
-
-    await invoke('us-east-1', 'optFaas-dev-logger', executionData)
-}
-
 export const logExecutionData = (event, context) => {
-    console.log(event)
     const executionData: ExecutionData = {
         "requestId": context.awsRequestId,
         "logGroupName": context.logGroupName,
@@ -50,6 +34,5 @@ export const logExecutionData = (event, context) => {
         "sregion": event.payload.sregion,
         "numberOfParallelExecutions": event.payload.numberOfParallelExecutions
     }
-
     console.log(executionData)
 }
