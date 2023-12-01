@@ -1,8 +1,10 @@
+import {middify} from "@libs/logger";
 import * as fs from 'fs';
 import {rimraf} from 'rimraf';
 import {BenchmarkFunction} from "@models/model";
+import {wrapperFunction} from "@libs/wrapper";
 
-export const fileSystemBenchmark:BenchmarkFunction = () => {
+const fileSystemBenchmark:BenchmarkFunction = () => {
     let n = 10000;
     let size=  10240;
     let rnd = Math.floor(Math.random() * 900000) + 100000;
@@ -40,3 +42,9 @@ export const fileSystemBenchmark:BenchmarkFunction = () => {
 
     return files.length == n;
 };
+
+const wNodejs = async (event, context) => {
+    return await wrapperFunction(fileSystemBenchmark, event, context);
+}
+
+export const main = middify(wNodejs, "nodejs02");

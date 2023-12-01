@@ -7,8 +7,6 @@ export interface FunctionData {
 
 export interface ExecutionData {
     requestId: string;
-    logGroupName: string;
-    logStreamName: string;
     functionName: string;
     memoryLimitInMB: string;
     sregion: string;
