@@ -1,6 +1,6 @@
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { invoke } from "@libs/invoker";
-import { variables, AWS_REGIONS } from 'variables';
+import { variables } from 'variables';
 
 
 /**
@@ -15,25 +15,33 @@ import { variables, AWS_REGIONS } from 'variables';
  */
 const scheduleBenchmarkFunctions = async () => {
     const promises = []
-
+    const client: LambdaClient = new LambdaClient({ region: 'us-east-1' });
     variables.REGION.forEach(sregion => {
-        const client: LambdaClient = new LambdaClient({ region: AWS_REGIONS[sregion] });
         variables.SCHEDULED_FUNCTIONS.forEach(ufunctionId => {
             promises.push(invoke(
                 client,
                 `optFaas-dev-benchmarkRunner`,
                 {
                     numberOfParallelExecutions: variables.NUMBER_OF_PARALLELIZATION,
-                    language: "nodejs",
                     sregion: sregion,
                     ufunctionId: ufunctionId,
                 }));
+            // promises.push(invoke(
+            //     client,
+            //     `optFaas-dev-benchmarkRunnerAPI`,
+            //     {
+            //         numberOfParallelExecutions: variables.NUMBER_OF_PARALLELIZATION,
+            //         sregion: sregion,
+            //         ufunctionId: ufunctionId,
+            //     }));
 
             promises.push(invoke(
-                new LambdaClient({ region: 'us-east-1' }),
-                'optFaas-dev-cwLogger',
+                client,
+                'optFaas-dev-cloudWatchLogger',
                 {
-                    logGroupName: `/aws/lambda/optFaas-dev-benchmarkFunction${ufunctionId}`
+                    logGroupName: `/aws/lambda/optFaas-dev-${ufunctionId}`,
+                    ufunctionId: ufunctionId,
+                    sregion: sregion,
                 }));
         });
     });

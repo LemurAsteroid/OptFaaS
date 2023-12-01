@@ -10,11 +10,11 @@ const benchmarkRunner = async (event) => {
     for (let i = 0; i < event.payload.numberOfParallelExecutions; i++) {
         promises.push(invoke(
             client,
-            `optFaas-dev-benchmarkFunction${event.payload.ufunctionId}`,
+            `optFaas-nodejs-dev-${event.payload.ufunctionId}`,
             {
                 numberOfParallelExecutions: event.payload.numberOfParallelExecutions,
                 language: "nodejs",
-                sregion: event.payload.sregion,
+                sregion: AWS_REGIONS[event.payload.sregion],
             }));
     }
     

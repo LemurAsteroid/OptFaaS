@@ -2,7 +2,7 @@ import { Logger, injectLambdaContext } from '@aws-lambda-powertools/logger';
 import { Metrics, logMetrics } from '@aws-lambda-powertools/metrics';
 import middy from '@middy/core';
 import { ExecutionData } from '@models/model';
-import { invoke } from './invoker';
+
 
 const defaultValues = {
     region: process.env.AWS_REGION || 'N/A',

@@ -1,31 +1,50 @@
-import { getLogsFromLastMinutes } from '@libs/cloudwatch';
-import { updateValue } from '@libs/dynamoDB';
-import { extractJsonFromLogEvent } from '@libs/jsonExtractor';
+import {getLogsFromLastMinutes} from '@libs/cloudwatch';
+import {extractJsonFromLogEvent, mapToCsv, storeInMap} from '@libs/jsonExtractor';
+import * as console from "console";
+import {putItem} from "@libs/s3";
+import variables, {AWS_REGIONS} from "../../../../variables";
 
-const cwLogger = async (event) => {
-  try {
-    console.log(event)
-    const logs = await getLogsFromLastMinutes(event.payload.logGroupName);
-    const extractedLogs = logs.map(extractJsonFromLogEvent).filter((item) => item !== null);
-    extractedLogs.map(saveLog);
+/**
+ * Asynchronous function for logging CloudWatch logs and storing them in an S3 bucket.
+ *
+ * @param {Object} event - The event object, typically representing an AWS Lambda event.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the response information.
+ * @throws {Error} Throws an error if any issues occur during execution.
+ *
+ * @example
+ * const event = {
+ *   payload: {
+ *     logGroupName: 'exampleLogGroup',
+ *     language: 'javascript',
+ *     functionName: 'exampleFunction'
+ *   }
+ * };
+ * const result = await cwLogger(event);
+ */
+const cloudWatchLogger = async (event):Promise<Object> => {
+    try {
+        const logMap: Map<string, any[]> = new Map();
 
-    return {
-      statusCode: 200,
-      body: 'Lambda executed successfully',
-      logs: extractedLogs,
-    };
-  } catch (error) {
-    console.error('Error:', error);
-    return {
-      statusCode: 500,
-      body: 'An error occurred',
-    };
-  }
+        await getLogsFromLastMinutes(event.payload.logGroupName, AWS_REGIONS[event.payload.sregion]).then(cwLogs =>
+            cwLogs.map(extractJsonFromLogEvent)
+                .filter((item) => item !== null)
+                .forEach(logRecord => storeInMap(logRecord, logMap))
+        );
+        console.log(logMap);
+        await putItem(variables.LOG_BUCKET_NAME,`logs/${event.payload.language}/${new Date().toISOString()}_${event.payload.functionName}.csv`, mapToCsv(logMap));
+
+        return {
+            statusCode: 200,
+            body: 'Lambda executed successfully',
+            logs: logMap
+        };
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            body: 'An error occurred',
+        };
+    }
 }
 
-const saveLog = async (log) => {
-  const updatedItem = await updateValue("ExecutionLogTable", { "requestId": log.requestId }, log);
-  return updatedItem
-}
-
-export const main = cwLogger 
+export const main = cloudWatchLogger
