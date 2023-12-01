@@ -9,7 +9,8 @@
         "noUnusedParameters": true,
         "removeComments": true,
         "sourceMap": true,
-        "target": "ES2020"
+        "target": "ES2020",
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/**/*.ts",
