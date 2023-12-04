@@ -27,14 +27,6 @@ async function uploadAndDeleteRandomFiles(): Promise<void> {
         }
         await Promise.all(promises);
 
-
-        // Delete files from S3
-        // const deletePromises = Array.from({ length: filesToGenerate }, (_, index) => {
-        //     const fileName = `random_file_${index + 1}.txt`;
-        //     return deleteFile(BUCKET_NAME, fileName);
-        // });
-
-
         fileNames.forEach(file => promises.push(deleteFile(BUCKET_NAME, `/tmp/${file}`)))
         await Promise.all(promises);
     } catch (error) {

@@ -28,7 +28,7 @@ const serverlessConfiguration: AWS = {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
         },
-        region: 'ap-northeast-1',
+        region: 'us-east-1',
         iam: {
             role: "arn:aws:iam::717556240325:role/Foppa_full_lambda_role",
         },
@@ -49,7 +49,10 @@ const serverlessConfiguration: AWS = {
     },
     // import the function via paths
     functions: { nodejs01, nodejs02, nodejs03, nodejs04, nodejs05 },
-    package: { individually: true },
+    package: {
+        include: ['src/functions/benchmarkFunctions/shared/template.handlebars'],
+        individually: true,
+    },
     custom: {
         esbuild: {
             bundle: true,

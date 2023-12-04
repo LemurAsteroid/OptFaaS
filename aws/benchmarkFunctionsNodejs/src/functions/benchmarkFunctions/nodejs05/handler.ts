@@ -3,17 +3,14 @@ import {wrapperFunction} from "@libs/wrapper";
 import * as Handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as util from 'util';
-
-const readFileAsync = util.promisify(fs.readFile);
 
 function random(b: number, e: number): number {
     return Math.round(Math.random() * (e - b) + b);
 }
 
 const webAppBenchmark = async () => {
-    const numRequests = 100; // Number of requests to send
-    const randomLen = 10; // Length of the random_numbers array
+    const numRequests = 100;
+    const randomLen = 10;
     const username = 'Guest';
 
     const benchmarkResults: string[] = [];
@@ -29,12 +26,10 @@ const webAppBenchmark = async () => {
             username,
             random_numbers,
         };
-
         try {
-            const file = path.resolve(__dirname, 'src', 'template.handlebars');
-            const data = await readFileAsync(file, 'utf-8');
+            const file = path.resolve('src/functions/benchmarkFunctions/shared/', 'template.handlebars');
+            const data = await fs.readFile(file,'utf8');
             const template = Handlebars.compile(data);
-
             template(input);
 
             const endTime = process.hrtime();
@@ -45,7 +40,6 @@ const webAppBenchmark = async () => {
             benchmarkResults.push(`Request ${i + 1} failed: ${error.message}`);
         }
     }
-
     return true;
 };
 
@@ -54,4 +48,4 @@ const wNodejs = async (event, context) => {
     return await wrapperFunction(webAppBenchmark, event, context);
 }
 
-export const main = middify(wNodejs, "nodejs03");
+export const main = middify(wNodejs, "nodejs05");

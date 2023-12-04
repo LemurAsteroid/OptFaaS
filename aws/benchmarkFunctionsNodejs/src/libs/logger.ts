@@ -27,9 +27,9 @@ export const logExecutionData = (event, context) => {
         "requestId": context.awsRequestId,
         "functionName": context.functionName,
         "memoryLimitInMB": context.memoryLimitInMB,
-        "language": event.language,
-        "sregion": event.sregion,
-        "numberOfParallelExecutions": event.numberOfParallelExecutions
+        "language": "nodejs",
+        "sregion": event.payload.sregion,
+        "numberOfParallelExecutions": event.payload.numberOfParallelExecutions
     }
 
     console.log(executionData)

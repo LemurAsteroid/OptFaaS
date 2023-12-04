@@ -14,6 +14,7 @@
     },
     "include": [
         "src/**/*.ts",
+        "src/**/*.handlebars",
         "serverless.ts"
     ],
     "exclude": [
