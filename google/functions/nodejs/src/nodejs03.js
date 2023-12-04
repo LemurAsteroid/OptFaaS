@@ -1,65 +1,41 @@
-const path = require('path');
-const { spawn } = require('child_process');
-const os = require('os');
+const Jimp = require('jimp');
+const {Storage} = require('@google-cloud/storage');
 
-const { Storage } = require('@google-cloud/storage');
-const fs = require("fs");
+const BUCKET_NAME = 'image_benchmark_bucket';
+const IMAGE_NAME = 'benchmark_image_1mb.jpg';
 
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-
-const ffmpeg = ffmpegPath;
 const storage = new Storage();
 
-const BUCKET_NAME = 'video_benchmark_bucket';
-const VIDEO_NAME = 'benchmark_sample_video.mp4';
+resizeImage = async (req, res) => {
+    const originalImageBuffer = await getUint8Array(BUCKET_NAME, IMAGE_NAME);
 
-
-convertVideoToGif = async (req) => {
-    const tmpDir = os.tmpdir();
-    const file = storage.bucket(BUCKET_NAME).file(VIDEO_NAME);
-    const tempLocalFile = path.join(tmpDir, VIDEO_NAME);
-    const tempLocalGif = path.join(tmpDir, `${path.basename(VIDEO_NAME, path.extname(VIDEO_NAME))}.gif`);
-
-    // Download the video from GCP to a temporary directory
-    await file.download({ destination: tempLocalFile });
-
-    // Convert the video to GIF using FFmpeg
-    const ffmpegProcess = spawn(ffmpeg, [
-        '-i', tempLocalFile,
-        '-vf', 'fps=10,scale=320:-1:flags=lanczos',
-        tempLocalGif,
-    ]);
-
-    await new Promise((resolve, reject) => {
-        ffmpegProcess.on('close', (code) => {
-            if (code === 0) {
-                // Upload the GIF to GCP
-                storage.bucket(BUCKET_NAME).upload(tempLocalGif, {
-                    destination: `converted/${path.basename(tempLocalGif)}`,
-                }, (err) => {
-                    if (err) {
-                        console.error('Error uploading GIF:', err);
-                        reject(err);
-                    } else {
-                        console.log('GIF uploaded successfully.');
-                        resolve();
-                    }
-                });
-            } else {
-                console.error('FFmpeg process failed with code ' + code);
-                reject(new Error('FFmpeg process failed'));
-            }
+    await Jimp.read(Buffer.from(originalImageBuffer))
+        .then((image) => {
+            return image
+                .resize(300, 300)
+                .greyscale();
         });
-    });
 
     return {
         success: true,
         payload: {
-            "test": "convertVideoToGifBenchmark"
+            test: 'convertVideoToGifBenchmark',
         },
     };
 };
 
+getUint8Array = async (bucketName, imageName) => {
+    const file = storage.bucket(bucketName).file(imageName);
+
+    // Download the file content as a buffer
+    const fileBuffer = await file.download();
+
+    // Convert the buffer to Uint8Array
+    const uint8Array = new Uint8Array(fileBuffer[0]);
+
+    return uint8Array;
+};
+
 module.exports = {
-    convertVideoToGif
+    resizeImage
 }

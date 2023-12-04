@@ -1,17 +1,20 @@
-const Handlebars = require('handlebars');
-const fs = require('fs').promises;
+const Mustache = require('mustache');
+const fs = require('fs');
 const path = require('path');
+const util = require('util');
+const readFileAsync = util.promisify(fs.readFile);
 
 function random(b, e) {
     return Math.round(Math.random() * (e - b) + b);
 }
 
-webAppBenchmark = async () => {
-    const numRequests = 100;
-    const randomLen = 10;
-    const username = 'Guest';
+webAppBenchmark = async (req) => {
 
-    const benchmarkResults= [];
+    const numRequests = 100; // Number of requests to send
+    const randomLen = 10; // Length of the random_numbers array
+    const username ='Guest';
+
+    const benchmarkResults = [];
 
     for (let i = 0; i < numRequests; i++) {
         const random_numbers = new Array(randomLen);
@@ -24,11 +27,13 @@ webAppBenchmark = async () => {
             username,
             random_numbers,
         };
+
         try {
-            const file = path.resolve('src/', 'template.handlebars');
-            const data = await fs.readFile(file,'utf8');
-            const template = Handlebars.compile(data);
-            template(input);
+            const file = path.resolve(__dirname, 'src', 'template.handlebars');
+            const data = await readFileAsync(file, 'utf-8');
+            const startTime = process.hrtime();
+
+            Mustache.render(data, input);
 
             const endTime = process.hrtime();
             const elapsedTimeInMs = (endTime[0] * 1000 + endTime[1] / 1e6).toFixed(2);
@@ -38,8 +43,14 @@ webAppBenchmark = async () => {
             benchmarkResults.push(`Request ${i + 1} failed: ${error.message}`);
         }
     }
-    return true;
+
+
+    return {
+        success: true,
+        payload: {"benchmark": "webApp"}
+    };
 };
+
 
 module.exports = {
     webAppBenchmark

@@ -1,57 +1,62 @@
-const Mustache = require('mustache');
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-const readFileAsync = util.promisify(fs.readFile);
+const fs = require("fs");
+const {v4: uuidv4} = require('uuid');
+const path = require("path");
+const {Storage} = require('@google-cloud/storage');
 
-function random(b, e) {
-    return Math.round(Math.random() * (e - b) + b);
+const storage = new Storage();
+
+const BUCKET_NAME = "storage_benchmark";
+
+function generateRandomData() {
+    return Buffer.from(Math.random().toString(36).substring(2, 15));
 }
 
-webAppBenchmark = async (req) => {
+deleteFile = async (BUCKET_NAME, KEY) => {
+    const bucket = storage.bucket(BUCKET_NAME);
+    const file = bucket.file(KEY);
 
-    const numRequests = 100; // Number of requests to send
-    const randomLen = 10; // Length of the random_numbers array
-    const username ='Guest';
+    await file.delete();
 
-    const benchmarkResults = [];
+    console.log(`File deleted successfully: gs://${BUCKET_NAME}/${KEY}`);
+}
 
-    for (let i = 0; i < numRequests; i++) {
-        const random_numbers = new Array(randomLen);
-        for (let j = 0; j < randomLen; j++) {
-            random_numbers[j] = random(0, 100);
-        }
+putFile = async (BUCKET_NAME, KEY, DATA) => {
+    const bucket = storage.bucket(BUCKET_NAME);
+    const file = bucket.file(KEY);
 
-        const input = {
-            cur_time: new Date().toLocaleString(),
-            username,
-            random_numbers,
-        };
+    await file.save(DATA);
 
-        try {
-            const file = path.resolve(__dirname, 'src', 'template.html');
-            const data = await readFileAsync(file, 'utf-8');
-            const startTime = process.hrtime();
+    console.log(`File uploaded successfully: gs://${BUCKET_NAME}/${KEY}`);
 
-            Mustache.render(data, input);
+}
 
-            const endTime = process.hrtime();
-            const elapsedTimeInMs = (endTime[0] * 1000 + endTime[1] / 1e6).toFixed(2);
+GCPStorageBenchmark = async () => {
+    const filesToGenerate = 15;
+    const fileNames = [];
+    const promises = [];
+    let fileName;
 
-            benchmarkResults.push(`Request ${i + 1}: ${elapsedTimeInMs}ms`);
-        } catch (error) {
-            benchmarkResults.push(`Request ${i + 1} failed: ${error.message}`);
-        }
+
+    for (let i = 0; i < filesToGenerate; i++) {
+        fileName = `random_file_${uuidv4()}.txt`;
+        fileNames.push(fileName);
+
+        promises.push(putFile(BUCKET_NAME, `/tmp/${fileName}`, generateRandomData()));
     }
+    await Promise.all(promises);
 
+    fileNames.forEach(file => promises.push(deleteFile(BUCKET_NAME, `/tmp/${file}`)))
+    await Promise.all(promises);
 
     return {
         success: true,
-        payload: {"benchmark": "webApp"}
+        payload: {
+            test: 'GCPStorageBenchmark',
+        },
     };
-};
+}
 
 
 module.exports = {
-    webAppBenchmark
+    GCPStorageBenchmark
 }

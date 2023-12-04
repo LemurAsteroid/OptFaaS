@@ -1,18 +1,21 @@
 {
     "scripts": {
         "nodejs01": "gcloud functions deploy nodejs01 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs01 --max-instances=30",
-        "nodejs02": "gcloud functions deploy nodejs02 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs02 --max-instances=30",
-        "nodejs03": "gcloud functions deploy nodejs03 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs03 --max-instances=20 --memory=1Gi",
+        "nodejs02": "gcloud functions deploy nodejs02 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs02 --max-instances=30 --memory=512" ,
+        "nodejs03": "gcloud functions deploy nodejs03 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs03 --max-instances=30 --memory=512",
         "nodejs04": "gcloud functions deploy nodejs04 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs04 --max-instances=20 --memory=256",
-        "nodejs05": "gcloud functions deploy nodejs05 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs05 --max-instances=20 --memory=256"
+        "nodejs05": "gcloud functions deploy nodejs05 --gen2 --runtime=nodejs18 --trigger-http --allow-unauthenticated --entry-point=nodejs05 --max-instances=20 - 27-memory=256"
     },
     "dependencies": {
         "@ffmpeg-installer/ffmpeg": "^1.1.0",
         "@google-cloud/functions-framework": "^3.0.0",
         "@google-cloud/storage": "^7.6.0",
-        "mustache": "^4.2.0",
+        "handlebars": "^4.7.8",
+        "jimp": "^0.22.10",
         "performance-now": "^2.1.0",
-        "rimraf": "^5.0.5"
+        "rimraf": "^5.0.5",
+        "sharp": "^0.32.6",
+        "uuid": "^9.0.1"
     },
     "name": "optfaas-nodejs-benchmark-suite",
     "version": "0.0.1",
