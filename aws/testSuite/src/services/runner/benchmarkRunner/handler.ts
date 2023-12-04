@@ -2,19 +2,21 @@ import { LambdaClient } from "@aws-sdk/client-lambda";
 import { invoke } from "@libs/invoker";
 import { middify } from "@libs/logger";
 import { AWS_REGIONS } from "variables";
+import * as console from "console";
 const benchmarkRunner = async (event) => {
     const promises = []
+    const payload = event.payload;
+    console.log(event);
 
-    const client: LambdaClient = new LambdaClient({ region: AWS_REGIONS[event.payload.sregion] });
+    const client: LambdaClient = new LambdaClient({ region: AWS_REGIONS[payload.sregion] });
 
-    for (let i = 0; i < event.payload.numberOfParallelExecutions; i++) {
+    for (let i = 0; i < payload.numberOfParallelExecutions; i++) {
         promises.push(invoke(
             client,
-            `optFaas-nodejs-dev-${event.payload.ufunctionId}`,
+            `optFaas-nodejs-dev-${payload.ufunctionId}`,
             {
-                numberOfParallelExecutions: event.payload.numberOfParallelExecutions,
-                language: "nodejs",
-                sregion: AWS_REGIONS[event.payload.sregion],
+                numberOfParallelExecutions: payload.numberOfParallelExecutions,
+                sregion: AWS_REGIONS[payload.sregion],
             }));
     }
     

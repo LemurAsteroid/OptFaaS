@@ -1,6 +1,7 @@
-import { LambdaClient } from "@aws-sdk/client-lambda";
-import { invoke } from "@libs/invoker";
-import { variables } from 'variables';
+import {LambdaClient} from "@aws-sdk/client-lambda";
+import {invoke} from "@libs/invoker";
+import {variables} from 'variables';
+import * as console from "console";
 
 
 /**
@@ -15,34 +16,32 @@ import { variables } from 'variables';
  */
 const scheduleBenchmarkFunctions = async () => {
     const promises = []
-    const client: LambdaClient = new LambdaClient({ region: 'us-east-1' });
+    const client: LambdaClient = new LambdaClient({region: 'us-east-1'});
     variables.REGION.forEach(sregion => {
         variables.SCHEDULED_FUNCTIONS.forEach(ufunctionId => {
+            const payload = {
+                numberOfParallelExecutions: variables.NUMBER_OF_PARALLELIZATION,
+                sregion: sregion,
+                ufunctionId: ufunctionId,
+            }
             promises.push(invoke(
                 client,
                 `optFaas-dev-benchmarkRunner`,
+                payload
+            ));
+            promises.push(invoke(
+                client,
+                `optFaas-dev-benchmarkRunnerAPI`,
                 {
                     numberOfParallelExecutions: variables.NUMBER_OF_PARALLELIZATION,
                     sregion: sregion,
                     ufunctionId: ufunctionId,
                 }));
-            // promises.push(invoke(
-            //     client,
-            //     `optFaas-dev-benchmarkRunnerAPI`,
-            //     {
-            //         numberOfParallelExecutions: variables.NUMBER_OF_PARALLELIZATION,
-            //         sregion: sregion,
-            //         ufunctionId: ufunctionId,
-            //     }));
-
             promises.push(invoke(
                 client,
                 'optFaas-dev-cloudWatchLogger',
-                {
-                    logGroupName: `/aws/lambda/optFaas-dev-${ufunctionId}`,
-                    ufunctionId: ufunctionId,
-                    sregion: sregion,
-                }));
+                payload));
+            console.log(`Started Runner for ${ufunctionId} in ${sregion}`);
         });
     });
     const response = await Promise.all(promises)

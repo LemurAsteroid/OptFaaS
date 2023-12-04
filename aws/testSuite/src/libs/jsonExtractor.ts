@@ -16,6 +16,7 @@ const extractReportAttributes = (reportString: string): Record<string, string | 
     });
     if (jsonObject['initDuration'] == undefined) {
         jsonObject['initDuration'] = 0;
+        jsonObject['coldStart'] = false;
     }
     return jsonObject;
 }

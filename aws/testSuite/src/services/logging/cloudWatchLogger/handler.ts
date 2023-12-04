@@ -2,7 +2,7 @@ import {getLogsFromLastMinutes} from '@libs/cloudwatch';
 import {extractJsonFromLogEvent, mapToCsv, storeInMap} from '@libs/jsonExtractor';
 import * as console from "console";
 import {putItem} from "@libs/s3";
-import variables, {AWS_REGIONS} from "../../../../variables";
+import variables, {AWS_REGIONS, CWlogGroupName} from "../../../../variables";
 
 /**
  * Asynchronous function for logging CloudWatch logs and storing them in an S3 bucket.
@@ -14,9 +14,9 @@ import variables, {AWS_REGIONS} from "../../../../variables";
  * @example
  * const event = {
  *   payload: {
- *     logGroupName: 'exampleLogGroup',
- *     language: 'javascript',
- *     functionName: 'exampleFunction'
+ *     language: 'nodejs',
+ *     sregion: 'us-central1',
+ *     ufunctionId: 'exampleFunction'
  *   }
  * };
  * const result = await cwLogger(event);
@@ -24,14 +24,15 @@ import variables, {AWS_REGIONS} from "../../../../variables";
 const cloudWatchLogger = async (event):Promise<Object> => {
     try {
         const logMap: Map<string, any[]> = new Map();
+        const logGroupName = CWlogGroupName[event.payload.ufunctionId];
 
-        await getLogsFromLastMinutes(event.payload.logGroupName, AWS_REGIONS[event.payload.sregion]).then(cwLogs =>
+        await getLogsFromLastMinutes(logGroupName, AWS_REGIONS[event.payload.sregion]).then(cwLogs =>
             cwLogs.map(extractJsonFromLogEvent)
                 .filter((item) => item !== null)
                 .forEach(logRecord => storeInMap(logRecord, logMap))
         );
         console.log(logMap);
-        await putItem(variables.LOG_BUCKET_NAME,`logs/${event.payload.language}/${new Date().toISOString()}_${event.payload.functionName}.csv`, mapToCsv(logMap));
+        await putItem(variables.LOG_BUCKET_NAME,`logs/${event.payload.ufunctionId}/LOG_${event.payload.sregion}_${new Date().toISOString()}.csv`, mapToCsv(logMap));
 
         return {
             statusCode: 200,

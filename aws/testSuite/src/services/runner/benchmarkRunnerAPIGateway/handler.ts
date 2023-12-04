@@ -1,21 +1,22 @@
 import { resolveURL } from '@libs/apiGatewayResolver';
 import { middify } from '@libs/logger';
 import fetch from 'node-fetch';
+import variables, {GCP_REGIONS} from "../../../../variables";
 
 const benchmarkRunnerAPI = async (event) => {
     const promises = []
     console.log(event)
+    const payload = event.payload;
 
-    const apiGatewayEndpoint = resolveURL(event.sregion, event.provider, event.functionData); // Replace with your API Gateway endpoint URL
+    const apiGatewayEndpoint = resolveURL(payload.sregion, payload.ufunctionId);
     console.log(apiGatewayEndpoint);
+    const requestData = {
+        ufunctionId: payload.ufunctionId,
+        region: GCP_REGIONS[payload.sregion],
+        numberOfParallelExecutions: payload.numberOfParallelExecutions,
+    };
 
-    for (let i = 0; i < event.numberOfExecution; i++) {
-        const requestData = {
-            ufunctionId: event.functionData.ufunctionId,
-            region: event.sregion,
-            numberOfParallelExecutions: event.numberOfExecution,
-        };
-
+    for (let i = 0; i < payload.numberOfParallelExecutions; i++) {
         // Make an HTTP POST request to the API Gateway endpoint
         promises.push(fetch(apiGatewayEndpoint, {
             method: 'POST',
@@ -27,6 +28,14 @@ const benchmarkRunnerAPI = async (event) => {
 
     }
     const results = await Promise.allSettled(promises);
+
+    await fetch(variables.GCF_LOG_FUNCTION_URL,{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+    })
 
     // Process results here
     for (let result of results) {

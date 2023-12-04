@@ -2,7 +2,6 @@ import { DynamoDBClient, PutItemCommand, GetItemCommand, UpdateItemCommand } fro
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb"
 import type { GetItemCommandInput, PutItemCommandInput, UpdateItemCommandInput } from "@aws-sdk/client-dynamodb";
 
-
 type DBTables = 'FunctionTable' | 'ExecutionLogTable'
 type QueryParams = { [key in string]: string | number | boolean }
 

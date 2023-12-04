@@ -55,16 +55,16 @@ const serverlessConfiguration: AWS = {
             concurrency: 10,
         },
     },
-    resources: {
-        Resources: {
-            LogBucket: {
-                Type: 'AWS::S3::Bucket',
-                Properties: {
-                    BucketName: 'optfaas-logs'
-                }
-            }
-        }
-    }
+    // resources: {
+    //     Resources: {
+    //         ResourceBucket: {
+    //             Type: 'AWS::S3::Bucket',
+    //             Properties: {
+    //                 BucketName: 'optfaas-resource-bucket'
+    //             }
+    //         },
+    //     }
+    // }
 };
 
 module.exports = serverlessConfiguration;
