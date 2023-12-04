@@ -1,3 +1,5 @@
+const projectName = 'optfaas';
+
 async function fetchLogs(client, metrics, functionData) {
     let logs = [];
     let metricLogPromises = [];
@@ -15,11 +17,11 @@ async function fetchLogs(client, metrics, functionData) {
  */
 async function fetchExecutionMetrics(client, functionData, metric) {
     const request = {
-        name: client.projectPath(functionData.projectName),
-        filter: `metric.type="${metric.FILTER}" AND resource.labels.function_name="${functionData.functionName}" AND resource.labels.region="${functionData.region}"`,
+        name: client.projectPath(projectName),
+        filter: `metric.type="${metric.FILTER}" ${metric.STATE} AND resource.labels.function_name="${functionData.ufunctionId}" AND resource.labels.region="${functionData.region}"`,
         interval: {
             startTime: {
-                seconds: Date.now() / 1000 - 60 * 40,
+                seconds: Date.now() / 1000 - 60 * 10,
             },
             endTime: {
                 seconds: Date.now() / 1000,
@@ -33,7 +35,10 @@ async function fetchExecutionMetrics(client, functionData, metric) {
             crossSeriesReducer: metric.REDUCE,
         },
     };
+
+        // const res = await client.listTimeSeries(request);
     const res = await client.listTimeSeries(request);
+
     return extractMetrics(res, metric.DATA_TYPE);
 }
 
@@ -70,7 +75,7 @@ function combineLog(logs, functionData) {
 
 
     logs[0].forEach(entry1 => {
-        let foundValues = [entry1.value];
+        let foundValues = [];
         const timestamp1 = entry1.timestamp;
         logs.forEach(log => foundValues.push(findClosestEntry(log, timestamp1).value));
 
@@ -78,7 +83,7 @@ function combineLog(logs, functionData) {
     });
 
     const csvRows = Object.entries(combinedLogs).map(([timestamp, log]) => {
-        return `${convertToISO(timestamp)},${log.foundValues.join(',')},${functionData.functionName},${functionData.region}`;
+        return `${convertToISO(timestamp)},${log.foundValues.join(',')},${functionData.ufunctionId},${functionData.region}, ${functionData.numberOfParallelExecutions}`;
     });
 
     return csvRows.join('\n');
