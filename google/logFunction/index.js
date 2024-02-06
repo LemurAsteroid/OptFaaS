@@ -5,7 +5,7 @@ const {safeLogs} = require("./libs/storage");
 const keyFilename = './credentials.json';
 
 const BUCKET_NAME = "execution_logs";
-const HEADERS = "timestamp, executionTime, concurrentExecutions, activeInstances, memoryUsage, language, region, numberOfParallelExecutions \n"
+const HEADERS = "timestamp, executionTime, concurrentExecutions, activeInstances, memoryUsage, language, region \n"
 
 const METRICS = [
     {
@@ -53,8 +53,7 @@ getLogFileName = (ufunctionId, region) => {
 exports.logFunction = async (req, res) => {
     const payload = {
         ufunctionId: req.body.ufunctionId,
-        region: req.body.region,
-        numberOfParallelExecutions: req.body.numberOfParallelExecutions
+        region: req.body.region
     }
     const logs = await fetchLogs(client, METRICS, payload);
     if (logs === "") return;

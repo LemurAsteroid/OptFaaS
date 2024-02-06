@@ -16,8 +16,6 @@ deleteFile = async (BUCKET_NAME, KEY) => {
     const file = bucket.file(KEY);
 
     await file.delete();
-
-    console.log(`File deleted successfully: gs://${BUCKET_NAME}/${KEY}`);
 }
 
 putFile = async (BUCKET_NAME, KEY, DATA) => {
@@ -25,8 +23,6 @@ putFile = async (BUCKET_NAME, KEY, DATA) => {
     const file = bucket.file(KEY);
 
     await file.save(DATA);
-
-    console.log(`File uploaded successfully: gs://${BUCKET_NAME}/${KEY}`);
 
 }
 

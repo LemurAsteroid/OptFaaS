@@ -17,6 +17,8 @@ const extractReportAttributes = (reportString: string): Record<string, string | 
     if (jsonObject['initDuration'] == undefined) {
         jsonObject['initDuration'] = 0;
         jsonObject['coldStart'] = false;
+    } else {
+        jsonObject['coldStart'] = true;
     }
     return jsonObject;
 }
@@ -44,7 +46,20 @@ const extractFunctionAttributes = (reportString: string): Record<string, string 
         console.error('Invalid log entry:', reportString);
         return null;
     }
-    ;
+}
+
+const extractJavaFunctionAttributes = (reportString: string): Record<string, string | number | boolean> | null => {
+    reportString = dropCharactersBeforeOpeningBrace(reportString);
+    const keyValuePairs = reportString.replace(/'|\s+|{|}|\"/g, '').split(',');
+
+    const jsonObject: Record<string, string | number | boolean> = {};
+
+    for (const pair of keyValuePairs) {
+        const [key, value] = pair.split('=');
+        jsonObject[key] = value;
+    }
+    console.log(jsonObject);
+    return jsonObject;
 }
 
 
@@ -58,17 +73,28 @@ const extractExecutionAttributes = (reportString: string): Record<string, string
     }
 }
 
+function dropCharactersBeforeOpeningBrace(input: string): string {
+    const indexOfOpeningBrace = input.indexOf('{');
+
+    if (indexOfOpeningBrace !== -1) {
+        return input.substring(indexOfOpeningBrace);
+    } else {
+        return input;
+    }
+}
 
 export const extractJsonFromLogEvent = (logEvent: FilteredLogEvent): Record<string, string | number | boolean> | null => {
     const logMessage = logEvent.message
     if (logMessage.startsWith('REPORT')) {
         return extractReportAttributes(logMessage.split('REPORT ')[1]);
-    } else if (logMessage.includes('functionName')) {
+    } else if (logMessage.includes('nodejs')) {
         return extractFunctionAttributes(logMessage);
     } else if (logMessage.includes('function_name')) {
         return extractExecutionAttributes(logMessage);
     } else if (logMessage.includes('userCPUTime')) {
         return extractFunctionAttributes(logMessage);
+    } else if (logMessage.includes('optFaas-java')) {
+        return extractJavaFunctionAttributes(logMessage);
     }
     return null;
 };
@@ -78,6 +104,7 @@ export const storeInMap = (input: Record<string, any>, map: Map<string, any>): v
     const {requestId, ...data} = input;
 
     if (!requestId) {
+        console.error(input)
         throw new Error('Input must have a "requestId" property.');
     }
 
@@ -88,17 +115,6 @@ export const storeInMap = (input: Record<string, any>, map: Map<string, any>): v
         map.set(requestId, data);
     }
 }
-
-
-// export const mapToCsv = (map: Record<string, any>): string => {
-//     const headers = Object.keys(map.values().next().value).join(',');
-//
-//     const rows = Array.from(map.entries()).map(([key, value]) => {
-//         const values = Object.values(value).map((v) => (v !== undefined ? v : 'undefined'));
-//         return `${key},${values.join(',')}`;
-//     });
-//     return `requestId, ${headers}\n${rows.join('\n')}`;
-// }
 
 export const mapToCsv = (map: Record<string, any>): string => {
     let sortedInnerMap;

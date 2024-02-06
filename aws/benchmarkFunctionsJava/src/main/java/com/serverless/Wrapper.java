@@ -18,12 +18,11 @@ public abstract class Wrapper implements RequestHandler<Map<String, Object>, Api
 
   @Override
   public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
-    executionDataLogger.logExecutionData(input, context);
-
     try {
+      executionDataLogger.logExecutionData(input, context);
       benchmarkFunction();
     } catch (Exception e) {
-      LOG.info("Error processing image: " + e.getMessage());
+      LOG.info("Error running function: " + e.getMessage());
       Response responseBody = new Response("Error on", input);
       return ApiGatewayResponse.builder()
               .setStatusCode(500)

@@ -1,10 +1,10 @@
 import {CloudWatchLogs, FilteredLogEvent} from '@aws-sdk/client-cloudwatch-logs';
 
-export const getLogsFromLastMinutes = async (logGroupName: string, region: string): Promise<FilteredLogEvent[]> => {
+export const getLogsFromLastMinutes = async (logGroupName: string, region: string, minutes: number): Promise<FilteredLogEvent[]> => {
     const cloudwatchlogs = new CloudWatchLogs({region: region});
     const endTime = new Date();
     // @ts-ignore
-    const startTime = new Date(endTime - 20 * 60 * 1000); // 1 minutes ago
+    const startTime = new Date(endTime - minutes * 60 * 1000); // 1 minutes ago
 
     const params = {
         logGroupName: logGroupName,

@@ -1,19 +1,19 @@
- gcloud functions deploy java01 \
-    --gen2 \
-    --entry-point functions.HelloWorld \
-    --runtime=java17 \
-    --region=asia-northeast1 \
-    --source=. \
-    --trigger-http \
-    --allow-unauthenticated \
-    --memory=256Mi \
-    --max-instances=30
+# gcloud functions deploy java01 \
+#    --gen2 \
+#    --entry-point functions.HelloWorld \
+#    --runtime=java17 \
+#    --region=asia-northeast1 \
+#    --source=. \
+#    --trigger-http \
+#    --allow-unauthenticated \
+#    --memory=256Mi \
+#    --max-instances=30
 
  gcloud functions deploy java01 \
     --gen2 \
     --entry-point functions.HelloWorld \
     --runtime=java17 \
-    --region=	europe-west3 \
+    --region=europe-west3 \
     --source=. \
     --trigger-http \
     --allow-unauthenticated \
@@ -118,7 +118,7 @@ gcloud functions deploy java02 \
     --gen2 \
     --entry-point functions.Fibonacci \
     --runtime=java17 \
-    --region=	europe-west3 \
+    --region=europe-west3 \
     --source=. \
     --trigger-http \
     --allow-unauthenticated \

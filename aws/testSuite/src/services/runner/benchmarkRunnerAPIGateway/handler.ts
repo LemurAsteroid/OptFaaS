@@ -54,10 +54,10 @@ const benchmarkRunnerAPI = async (event) => {
             console.error(`Error: ${error.message}`);
         }
     }
-    
+
     return {
         statusCode: 200,
-        body: results,
+        body: `Function ${payload.ufunctionId} was invoked ${payload.numberOfParallelExecutions} times`
     };
 
 };

@@ -2,7 +2,9 @@ import {logExecutionData} from "@libs/logger";
 import * as console from "console";
 
 export const wrapperFunction = async (benchmarkFunction, event, context) => {
+    console.log(event);
     logExecutionData(event, context);
+
 
     const response = await benchmarkFunction();
 

@@ -83,7 +83,7 @@ function combineLog(logs, functionData) {
     });
 
     const csvRows = Object.entries(combinedLogs).map(([timestamp, log]) => {
-        return `${convertToISO(timestamp)},${log.foundValues.join(',')},${functionData.ufunctionId},${functionData.region}, ${functionData.numberOfParallelExecutions}`;
+        return `${convertToISO(timestamp)},${log.foundValues.join(',')},${functionData.ufunctionId},${functionData.region}`;
     });
 
     return csvRows.join('\n');

@@ -1,5 +1,4 @@
-import { LambdaClient, InvokeCommand, InvokeCommandInput } from "@aws-sdk/client-lambda";
-import { AWS_REGIONS } from 'variables';
+import {LambdaClient, InvokeCommand, InvokeCommandInput} from "@aws-sdk/client-lambda";
 
 /**
  * Asynchronously invokes an AWS Lambda function with the specified parameters.
@@ -17,7 +16,7 @@ export const invoke = async (client: LambdaClient, ufunctionId: string, payload:
     const params: InvokeCommandInput = {
         FunctionName: ufunctionId,
         InvocationType: 'Event',
-        Payload: JSON.stringify({ payload })
+        Payload: JSON.stringify({payload})
     };
     return client.send(new InvokeCommand(params))
 }

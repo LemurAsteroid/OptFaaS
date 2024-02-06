@@ -4,6 +4,7 @@ import scheduleBenchmarkFunctions from '@services/runner/benchmarkMaster';
 import benchmarkRunner from '@services/runner/benchmarkRunner';
 import benchmarkRunnerAPI from '@services/runner/benchmarkRunnerAPIGateway';
 import cloudWatchLogger from "@services/logging/cloudWatchLogger";
+import loggingRunner from "@services/logging/loggingRunner";
 
 
 const serverlessConfiguration: AWS = {
@@ -36,12 +37,19 @@ const serverlessConfiguration: AWS = {
                 Effect: "Allow",
                 Action: ["lambda:InvokeFunction"],
                 Principal: "*",
-                Resource: ["arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkMaster", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkRunner", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkFunction02"]
+                Resource: ["arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkMaster", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:benchmarkRunner", "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:loggingRunner"]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "events:PutRule",
+                    "events:PutTargets"
+                ],
+                "Resource": "*"
             },
         ]
     },
-    // import the function via paths
-    functions: { scheduleBenchmarkFunctions, benchmarkRunner, cloudWatchLogger, benchmarkRunnerAPI },
+    functions: { scheduleBenchmarkFunctions, benchmarkRunner, cloudWatchLogger, benchmarkRunnerAPI, loggingRunner},
     package: { individually: true },
     custom: {
         esbuild: {
@@ -55,16 +63,6 @@ const serverlessConfiguration: AWS = {
             concurrency: 10,
         },
     },
-    // resources: {
-    //     Resources: {
-    //         ResourceBucket: {
-    //             Type: 'AWS::S3::Bucket',
-    //             Properties: {
-    //                 BucketName: 'optfaas-resource-bucket'
-    //             }
-    //         },
-    //     }
-    // }
 };
 
 module.exports = serverlessConfiguration;
