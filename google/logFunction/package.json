@@ -1,0 +1,23 @@
+{
+    "scripts": {
+        "deploy": "gcloud functions deploy logFunction --gen2 --runtime=nodejs18 --trigger-http --region us-central1 --entry-point=logFunction --max-instances=30 --timeout=10"
+    },
+    "dependencies": {
+        "@google-cloud/functions-framework": "^3.0.0",
+        "@google-cloud/monitoring": "^4.0.0",
+        "@google-cloud/storage": "^7.6.0",
+        "googleapis": "^128.0.0"
+    },
+    "name": "optfaas-logger",
+    "version": "0.0.1",
+    "private": true,
+    "license": "Apache-2.0",
+    "author": "Google Inc.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GoogleCloudPlatform/nodejs-docs-samples.git"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    }
+}

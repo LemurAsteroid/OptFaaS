@@ -1,0 +1,36 @@
+service: optFaas-java
+
+frameworkVersion: '3'
+
+provider:
+    name: aws
+    runtime: java11
+    deploymentMethod: direct
+
+    stage: dev
+    region: us-east-1
+
+    iam:
+        role: "arn:aws:iam::717556240325:role/Foppa_full_lambda_role"
+
+package:
+    artifact: target/optfaas-dev.jar
+
+functions:
+    hello:
+        handler: com.serverless.Handler
+    java01:
+        handler: com.serverless.HelloWorld
+        memorySize: 256
+    java02:
+        handler: com.serverless.ImageProcessingFunction
+        timeout: 30
+        memorySize: 512
+    java03:
+        handler: com.serverless.StorageBenchmark
+        timeout: 30
+        memorySize: 256
+    java04:
+        handler: com.serverless.Fibonacci
+        timeout: 30
+        memorySize: 256
